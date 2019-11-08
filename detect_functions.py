@@ -66,7 +66,6 @@ def recog_faces_frame(known_faces_encoded, known_faces_names,vs):
 
         # Detect and calculate face properties in every other frame
         face_locations = face_recognition.face_locations(rgb_small_frame)
-        print(len(face_locations))
         img_face_encodings = face_recognition.face_encodings(rgb_small_frame,face_locations)
 
         faces_detected = []
@@ -140,11 +139,12 @@ def upload_frame(frame, init_comment, cur_time):
             }
 
     slack_token = os.environ["SLACK_BOT_TOKEN"]
+    channel = os.environ["SLACK_CHANNEL"]
         
     payload={
         "filename":"doorman.jpg", 
         "token": slack_token, 
-        "channels":['CPWJEHWGJ'],
+        "channels":[channel],
         'title': '{}'.format(cur_time),
         'initial_comment': init_comment
         }
