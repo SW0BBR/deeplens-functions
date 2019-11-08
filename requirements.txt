@@ -1,0 +1,9 @@
+cmake
+dlib
+face_recognition
+numpy
+opencv-python
+certifi
+slack
+pytz
+requests
