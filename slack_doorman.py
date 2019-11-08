@@ -6,6 +6,7 @@ import cv2, requests, time, os
 face_database = []
 known_faces_encoded, known_face_names = calc_faces()
 vs = cv2.VideoCapture('/opt/awscam/out/ch2_out.mjpeg')
+last_seen = []
 print("Detecting, comparing and drawing faces ...")
 while True:
     # Check for lockfiles
@@ -15,15 +16,13 @@ while True:
 
     if os.path.isfile('./stop.txt'):
         os.remove('stop.txt')
-        print("stop exists")
+        print("Stop exists")
         break
 
     names, frame, frame_noBB = recog_faces_frame(known_faces_encoded, known_face_names, vs)
 
     if names:
-      # showframe = cv2.resize(frame, None, fx=0.4,fy=0.4)
-      # cv2.imshow("frame", showframe)
-      print("Face detected, uploading to slack ...")
+      print("{} detected, ".format(names), end='')
 
       # Add to database
       cur_time_full = get_cur_time()
@@ -35,14 +34,23 @@ while True:
         im = Image.fromarray(frame_noBB)
         im.save("unknown@{}.jpg".format(cur_time_date))
 
+      # Don't show the same face
+      if last_seen == names:
+         print("skipping ...")
+         continue
+
       # Upload to slack
+      print("uploading to slack ...")
       init_comment = get_init_comment(names)
       upload_frame(frame, init_comment, cur_time_full)
-      time.sleep(2)
+
+      last_seen = names
+
     elif names == None:
       vs.release()
       vs.open()
       continue
+
     elif not names:
       print("Nobody at the door at {}".format(get_cur_time()))
 

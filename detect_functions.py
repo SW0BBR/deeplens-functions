@@ -150,5 +150,6 @@ def upload_frame(frame, init_comment, cur_time):
         }
 
     requests.post(url='https://slack.com/api/files.upload', params=payload, files=image)
-    print("Done.")
+    print("Done, waiting 3 seconds ...")
+    time.sleep(3)
 
